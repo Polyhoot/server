@@ -4,10 +4,12 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.routing.*
 import org.ciphen.polyhoot.config.ApplicationConfig
 import org.ciphen.polyhoot.db.DB
+import org.ciphen.polyhoot.routes.userRouting
 import org.ciphen.polyhoot.services.WebSocket
 import org.ciphen.polyhoot.services.configureRouting
 import org.litote.kmongo.*
@@ -43,6 +45,7 @@ class Application {
                 }
             }
             configureRouting()
+            userRouting()
         }.start(wait = true)
     }
 }
