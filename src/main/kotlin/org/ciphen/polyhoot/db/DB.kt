@@ -1,9 +1,9 @@
 package org.ciphen.polyhoot.db
 
-import com.mongodb.client.MongoDatabase
-import org.litote.kmongo.KMongo
+import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.reactivestreams.*
 
 object DB {
-    val client = KMongo.createClient(System.getenv("MONGOURI"))
-    val database: MongoDatabase = client.getDatabase("polyhoot")
+    private val client = KMongo.createClient(System.getenv("MONGOURI")).coroutine
+    val database = client.getDatabase("polyhoot")
 }

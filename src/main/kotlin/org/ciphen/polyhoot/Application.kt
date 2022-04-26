@@ -1,18 +1,18 @@
 package org.ciphen.polyhoot
 
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
-import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
-import io.ktor.server.routing.*
+import io.ktor.server.plugins.contentnegotiation.*
 import org.ciphen.polyhoot.config.ApplicationConfig
-import org.ciphen.polyhoot.db.DB
 import org.ciphen.polyhoot.routes.userRouting
 import org.ciphen.polyhoot.services.WebSocket
 import org.ciphen.polyhoot.services.configureRouting
-import org.litote.kmongo.*
+import io.ktor.server.plugins.cors.*
 
 class Application {
     companion object {
@@ -39,10 +39,12 @@ class Application {
         embeddedServer(Netty, port = applicationConfig.port, host = "0.0.0.0") {
             ktorApplication = this
             WebSocket(this)
-            install(Authentication) {
-                jwt {
-                    var secret = applicationConfig.secret
-                }
+            install(ContentNegotiation) {
+                json()
+            }
+            install(CORS) {
+                anyHost()
+                allowHeader(HttpHeaders.ContentType)
             }
             configureRouting()
             userRouting()
