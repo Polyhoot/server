@@ -21,3 +21,9 @@ data class CreateUserResponse(
     val token: String?,
     val errorMessage: String?
 )
+
+@Serializable
+data class LoginDTO(
+    val password: String,
+    val email: String
+)
