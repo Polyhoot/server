@@ -2,6 +2,7 @@ package org.ciphen.polyhoot.routes
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -25,7 +26,7 @@ fun Application.userRouting() {
                 val findUser: Long = users.countDocuments(User::email eq userDTO.email)
 
                 if (findUser > 0) {
-                    call.respond(CreateUserResponse(409,null, "Email already exists"))
+                    call.respond(HttpStatusCode.Conflict, CreateUserResponse(409,null, "Email already exists"))
                     return@post
                 }
                 val newUser = users.insertOne(User(
@@ -46,7 +47,7 @@ fun Application.userRouting() {
                 val loginDTO = call.receive<LoginDTO>()
                 val user = users.findOne(User::email eq loginDTO.email)
                 if (user == null) {
-                    call.respond(CreateUserResponse(404,null, "User not found"))
+                    call.respond(HttpStatusCode.NotFound, CreateUserResponse(404,null, "User not found"))
                     return@post
                 }
                 val compare = BCrypt.checkpw(loginDTO.password, user.password)
@@ -58,7 +59,7 @@ fun Application.userRouting() {
                             .sign(Algorithm.HMAC256(System.getenv("JWT_SECRET"))), null)
                     )
                 } else {
-                    call.respond(CreateUserResponse(403,null, "Incorrect password"))
+                    call.respond(HttpStatusCode.Unauthorized, CreateUserResponse(403,null, "Incorrect password"))
                 }
             }
         }
