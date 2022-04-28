@@ -2,6 +2,7 @@ package org.ciphen.polyhoot.domain
 import io.ktor.http.*
 import kotlinx.serialization.*
 data class User(
+    val id: String,
     val name: String,
     val password: String,
     val email: String,
@@ -26,4 +27,11 @@ data class CreateUserResponse(
 data class LoginDTO(
     val password: String,
     val email: String
+)
+
+@Serializable
+data class UserDataResponse(
+    val email: String,
+    val name: String,
+    val packs: List<String>
 )

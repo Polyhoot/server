@@ -44,4 +44,5 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("io.ktor:ktor-server-cors:$ktor_version")
+    implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
 }

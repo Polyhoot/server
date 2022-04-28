@@ -1,5 +1,7 @@
 package org.ciphen.polyhoot
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -13,6 +15,7 @@ import org.ciphen.polyhoot.routes.userRouting
 import org.ciphen.polyhoot.services.WebSocket
 import org.ciphen.polyhoot.services.configureRouting
 import io.ktor.server.plugins.cors.*
+import io.ktor.server.response.*
 
 class Application {
     companion object {
@@ -45,6 +48,25 @@ class Application {
             install(CORS) {
                 anyHost()
                 allowHeader(HttpHeaders.ContentType)
+            }
+            install(Authentication) {
+                jwt("auth-jwt") {
+                    verifier(
+                        JWT
+                        .require(Algorithm.HMAC256(System.getenv("JWT_SECRET")))
+                        .build()
+                    )
+                    validate { credential ->
+                        if (credential.payload.getClaim("id").asString() != "") {
+                            JWTPrincipal(credential.payload)
+                        } else {
+                            null
+                        }
+                    }
+                    challenge { defaultScheme, _ ->
+                        call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+                    }
+                }
             }
             configureRouting()
             userRouting()
