@@ -1,7 +1,7 @@
 package org.ciphen.polyhoot.game.utils
 
 import io.ktor.websocket.*
-import org.ciphen.polyhoot.game.GameSession
+import org.ciphen.polyhoot.game.session.GameSession
 import org.ciphen.polyhoot.game.entities.Player
 import org.ciphen.polyhoot.services.entities.Client
 

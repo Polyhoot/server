@@ -15,5 +15,8 @@ class WebSocket(application: Application) {
             maxFrameSize = Long.MAX_VALUE
             masking = false
         }
+
+        Connect()
+        Create()
     }
 }

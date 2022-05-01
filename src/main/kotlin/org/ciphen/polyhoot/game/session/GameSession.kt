@@ -1,4 +1,4 @@
-package org.ciphen.polyhoot.game
+package org.ciphen.polyhoot.game.session
 
 import org.ciphen.polyhoot.game.entities.Player
 import org.ciphen.polyhoot.game.utils.GamesController
