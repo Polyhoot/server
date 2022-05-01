@@ -5,12 +5,12 @@ import org.ciphen.polyhoot.game.utils.GamesController
 import org.ciphen.polyhoot.services.entities.Client
 import kotlin.random.Random
 
-class GameSession(val client: Client, val packId: Long, val gameId: Int) {
+class GameSession(val client: Client, val packId: String, val gameId: Int) {
     companion object {
         private const val GAME_ID_MAX = 999999
         private const val GAME_ID_MIN = 100000
 
-        fun create(client: Client, packId: Long): GameSession {
+        fun create(client: Client, packId: String): GameSession {
             val random = Random(System.currentTimeMillis())
             var gameId = random.nextInt(GAME_ID_MIN, GAME_ID_MAX)
             val gameController = GamesController.getInstance()
