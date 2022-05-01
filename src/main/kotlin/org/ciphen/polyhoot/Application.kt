@@ -1,5 +1,7 @@
 package org.ciphen.polyhoot
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.LoggerContext
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
@@ -16,6 +18,7 @@ import org.ciphen.polyhoot.services.WebSocket
 import org.ciphen.polyhoot.services.configureRouting
 import io.ktor.server.plugins.cors.*
 import io.ktor.server.response.*
+import org.slf4j.LoggerFactory
 
 class Application {
     companion object {
@@ -29,6 +32,7 @@ class Application {
 
         @JvmStatic
         fun main(args: Array<String>) {
+            (LoggerFactory.getILoggerFactory() as LoggerContext).getLogger("org.mongodb.driver").level = Level.ERROR
             getInstance().applicationConfig = ApplicationConfig(args)
             getInstance().onConfigLoaded()
         }
