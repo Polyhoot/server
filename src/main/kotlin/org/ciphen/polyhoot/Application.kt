@@ -14,6 +14,7 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import org.ciphen.polyhoot.config.ApplicationConfig
 import org.ciphen.polyhoot.routes.userRouting
+import org.ciphen.polyhoot.routes.packRouting
 import org.ciphen.polyhoot.services.WebSocket
 import org.ciphen.polyhoot.services.configureRouting
 import io.ktor.server.plugins.cors.*
@@ -57,6 +58,7 @@ class Application {
             install(CORS) {
                 anyHost()
                 allowHeader(HttpHeaders.ContentType)
+                allowHeader(HttpHeaders.Authorization)
             }
             install(Authentication) {
                 jwt("auth-jwt") {
@@ -79,6 +81,7 @@ class Application {
             }
             configureRouting()
             userRouting()
+            packRouting()
         }.start(wait = true)
     }
 }
