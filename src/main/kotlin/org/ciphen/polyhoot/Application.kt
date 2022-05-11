@@ -15,6 +15,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import org.ciphen.polyhoot.config.ApplicationConfig
 import org.ciphen.polyhoot.routes.userRouting
 import org.ciphen.polyhoot.routes.packRouting
+import org.ciphen.polyhoot.routes.fileRouting
 import org.ciphen.polyhoot.services.WebSocket
 import org.ciphen.polyhoot.services.configureRouting
 import io.ktor.server.plugins.cors.*
@@ -82,6 +83,7 @@ class Application {
             configureRouting()
             userRouting()
             packRouting()
+            fileRouting()
         }.start(wait = true)
     }
 }
