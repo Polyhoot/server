@@ -6,7 +6,8 @@ data class Pack(
     val id: String,
     val authorId: String,
     val name: String,
-    val questions: List<Question>
+    val questions: List<Question>,
+    val createdAt: String
 )
 
 @Serializable
@@ -21,9 +22,10 @@ data class Question(
 @Serializable
 data class Media(
     val url: String,
-    val start: Int?,
-    val end: Int?,
-    val hideName: Boolean?
+    val startTime: Int?,
+    val length: Int?,
+    val hideName: Boolean?,
+    val type: String
 )
 @Serializable
 data class Answer(
@@ -35,4 +37,31 @@ data class Answer(
 data class CreatePackDTO(
     val name: String,
     val questions: List<Question>
+)
+
+@Serializable
+data class AutosaveInfoResponse(
+    val packId: String
+)
+
+@Serializable
+data class SavePackDTO(
+    val packId: String,
+    val name: String,
+    val questions: List<Question>
+)
+
+@Serializable
+data class PackResponse(
+    val id: String,
+    val name: String,
+    val questions: List<Question>,
+    val authorId: String,
+    val authorName: String,
+    val createdAt: String
+)
+
+@Serializable
+data class GetPacksResponse(
+    val packs: List<PackResponse>
 )
