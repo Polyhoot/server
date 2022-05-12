@@ -26,7 +26,7 @@ class GamesController {
 
     fun getGameById(gameId: Int): GameSession? = games[gameId]
 
-    fun connectPlayer(player: Player): Boolean {
+    suspend fun connectPlayer(player: Player): Boolean {
         if (!games.keys.contains(player.gameId)) {
             return false
         } else {

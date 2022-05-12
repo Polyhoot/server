@@ -37,7 +37,7 @@ class Application {
         @JvmStatic
         fun main(args: Array<String>) {
             Log.logger!!.I(TAG, "Starting Polyhoot server!")
-            if (ApplicationConfig(args).also { getInstance().applicationConfig = it }.debug) {
+            if (!ApplicationConfig(args).also { getInstance().applicationConfig = it }.debug) {
                 (LoggerFactory.getILoggerFactory() as LoggerContext).getLogger("org.mongodb.driver").level = Level.ERROR
             }
             getInstance().onConfigLoaded()

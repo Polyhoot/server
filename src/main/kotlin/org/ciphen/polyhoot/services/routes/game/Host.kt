@@ -20,7 +20,8 @@ class Host {
                 var gameHostEventHandler: GameHostEventHandler? = null
                 if (incoming.receive().also { data = (it as Frame.Text).readText() } is Frame.Text) {
                     val json = Json.parseToJsonElement(data)
-                    val action = GameHostActions.fromString(json.jsonObject["action"]!!.jsonPrimitive.toString())
+                    val action = GameHostActions.fromString(json.jsonObject["action"]!!.jsonPrimitive.content)
+                    println(action)
                     if (action != GameHostActions.CONNECT) {
                         outgoing.send(
                             Frame.Text(
@@ -49,7 +50,7 @@ class Host {
                     if (frame is Frame.Text) {
                         val frameData = frame.readText()
                         val json = Json.parseToJsonElement(frameData)
-                        val action = GameHostActions.fromString(json.jsonObject["action"]!!.jsonPrimitive.toString())
+                        val action = GameHostActions.fromString(json.jsonObject["action"]!!.jsonPrimitive.content)
                         gameHostEventHandler!!.onHostAction(action, frameData)
                     }
                 }

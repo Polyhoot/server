@@ -9,6 +9,6 @@ class GameActions {
         private val clientManager = ClientManager.getInstance()
         private val gamesController = GamesController.getInstance()
 
-        fun Create(packId: String): Int = GameSession.create(packId).gameId
+        fun Create(): Int = GameSession.create().gameId
     }
 }

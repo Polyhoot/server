@@ -16,10 +16,7 @@ class Create {
             webSocket("/game/create") {
                 var data: Frame.Text
                 if (incoming.receive().also { data = it as Frame.Text } is Frame.Text) {
-                    val json = Json.parseToJsonElement(data.readText())
-                    val gamePin = GameActions.Create(
-                        json.jsonObject["packId"]!!.jsonPrimitive.content
-                    )
+                    val gamePin = GameActions.Create()
                     outgoing.send(
                         Frame.Text(
                             JsonObject(
