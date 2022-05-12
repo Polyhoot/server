@@ -18,11 +18,13 @@ import org.ciphen.polyhoot.services.WebSocket
 import org.ciphen.polyhoot.services.configureRouting
 import io.ktor.server.plugins.cors.*
 import io.ktor.server.response.*
+import org.ciphen.polyhoot.utils.Log
 import org.slf4j.LoggerFactory
 
 class Application {
     companion object {
         private var INSTANCE: Application? = null
+        private val TAG = "Application"
         fun getInstance(): Application {
             if (INSTANCE == null) {
                 INSTANCE = Application()
@@ -32,17 +34,20 @@ class Application {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            (LoggerFactory.getILoggerFactory() as LoggerContext).getLogger("org.mongodb.driver").level = Level.ERROR
-            getInstance().applicationConfig = ApplicationConfig(args)
+            Log.logger!!.I(TAG, "Starting Polyhoot server!")
+            if (ApplicationConfig(args).also { getInstance().applicationConfig = it }.debug) {
+                (LoggerFactory.getILoggerFactory() as LoggerContext).getLogger("org.mongodb.driver").level = Level.ERROR
+            }
             getInstance().onConfigLoaded()
         }
     }
 
     lateinit var applicationConfig: ApplicationConfig
     lateinit var ktorApplication: io.ktor.server.application.Application
+    private val logger = Log.logger!!
 
     fun onConfigLoaded() {
-        println("Port: ${applicationConfig.port}")
+        logger.I(TAG, "Config loaded. Launching embedded server on localhost on port ${applicationConfig.port}.")
         embeddedServer(Netty, port = applicationConfig.port, host = "0.0.0.0") {
             ktorApplication = this
             WebSocket(this)
