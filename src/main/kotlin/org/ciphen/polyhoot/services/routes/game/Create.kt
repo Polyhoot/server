@@ -16,14 +16,14 @@ class Create {
             webSocket("/game/create") {
                 var data: Frame.Text
                 if (incoming.receive().also { data = it as Frame.Text } is Frame.Text) {
-                    val gamePin = GameActions.Create()
+                    val gameId = GameActions.Create()
                     outgoing.send(
                         Frame.Text(
                             JsonObject(
                                 mapOf(
                                     Pair(
-                                        "gamePin",
-                                        JsonPrimitive(gamePin)
+                                        "gameId",
+                                        JsonPrimitive(gameId)
                                     )
                                 )
                             ).toString()
