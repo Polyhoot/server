@@ -8,14 +8,17 @@ import org.ciphen.polyhoot.game.utils.GamesController
 
 class Debug {
     init {
-        Application.getInstance().ktorApplication.routing {
-            webSocket("/debug") {
-                for (frame in incoming) {
-                    when (frame) {
-                        is Frame.Text -> {
-                            val text = frame.readText()
-                            when (text) {
-                                "listSessions" -> outgoing.send(Frame.Text(GamesController.getInstance().games.toString()))
+        val application = Application.getInstance()
+        if (application.applicationConfig.debug) {
+            application.ktorApplication.routing {
+                webSocket("/debug") {
+                    for (frame in incoming) {
+                        when (frame) {
+                            is Frame.Text -> {
+                                val text = frame.readText()
+                                when (text) {
+                                    "listSessions" -> outgoing.send(Frame.Text(GamesController.getInstance().games.toString()))
+                                }
                             }
                         }
                     }

@@ -36,18 +36,14 @@ class GamesController {
         }
     }
 
+    private fun getGameByHost(client: Client): GameSession? = games.filter { it.value.host == client }[0]
+
     suspend fun hostDisconnected(client: Client): Boolean {
-        val matchingGames = games.filter { it.value.client == client }
-        if (matchingGames.isEmpty()) {
-            return false
-        }
-        matchingGames.forEach {
-            removeGame(it.key)
-        }
+        removeGame((getGameByHost(client) ?: return false).gameId)
         return true
     }
 
-    suspend fun removeGame(gameId: Int) {
+    private suspend fun removeGame(gameId: Int) {
         games[gameId]!!.players.values.forEach {
             it.client.session.close(CloseReason(CloseReason.Codes.GOING_AWAY, "Game has ended."))
         }

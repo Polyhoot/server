@@ -21,7 +21,7 @@ class ClientManager {
 
     private val clients: MutableMap<String, Client> = mutableMapOf()
 
-    suspend fun observeState(client: Client) {
+    private suspend fun observeState(client: Client) {
         println("Observing connection state of client with UUID ${client.uuid}")
         while (client.isAlive()) {
             client.clientStatus = ClientStatus.CONNECTED
@@ -37,7 +37,7 @@ class ClientManager {
         GlobalScope.launch {
             observeState(client)
         }
-        clients.put(client.uuid, client)
+        clients[client.uuid] = client
     }
 
     suspend fun removeClient(uuid: String) {

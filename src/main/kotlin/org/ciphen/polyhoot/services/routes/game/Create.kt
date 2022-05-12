@@ -18,36 +18,20 @@ class Create {
                 if (incoming.receive().also { data = it as Frame.Text } is Frame.Text) {
                     val json = Json.parseToJsonElement(data.readText())
                     val gamePin = GameActions.Create(
-                        json.jsonObject["uuid"]!!.jsonPrimitive.content,
                         json.jsonObject["packId"]!!.jsonPrimitive.content
                     )
-                    if (gamePin != null) {
-                        outgoing.send(
-                            Frame.Text(
-                                JsonObject(
-                                    mapOf(
-                                        Pair(
-                                            "gamePin",
-                                            JsonPrimitive(gamePin)
-                                        )
+                    outgoing.send(
+                        Frame.Text(
+                            JsonObject(
+                                mapOf(
+                                    Pair(
+                                        "gamePin",
+                                        JsonPrimitive(gamePin)
                                     )
-                                ).toString()
-                            )
+                                )
+                            ).toString()
                         )
-                    } else {
-                        outgoing.send(
-                            Frame.Text(
-                                JsonObject(
-                                    mapOf(
-                                        Pair(
-                                            "gamePin",
-                                            JsonPrimitive(-1)
-                                        )
-                                    )
-                                ).toString()
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }
