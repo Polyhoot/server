@@ -3,6 +3,7 @@ val ktor_version: String by project
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("application")
     id("com.github.johnrengelman.shadow")
 }
 
@@ -17,6 +18,10 @@ dependencies {
     implementation("io.ktor:ktor-client-websockets:$ktor_version")
     implementation("io.ktor:ktor-client-java:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+}
+
+application {
+    mainClass.set("org.ciphen.polyhoot.mockhost.MockHostKt")
 }
 
 tasks.shadowJar {
