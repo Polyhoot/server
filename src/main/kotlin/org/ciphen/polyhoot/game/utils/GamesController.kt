@@ -47,6 +47,13 @@ class GamesController {
         return null
     }
 
+    fun removeDisconnectedPlayer(client: Client): Boolean {
+        games.forEach {
+            it.value.removePlayer(client)
+        }
+        return true
+    }
+
     suspend fun hostDisconnected(client: Client): Boolean {
         removeGame((getGameByHost(client) ?: return false).gameId)
         return true

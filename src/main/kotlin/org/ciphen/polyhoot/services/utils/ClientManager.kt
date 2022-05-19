@@ -53,7 +53,7 @@ class ClientManager {
                     }
                 }
                 ClientType.PLAYER -> {
-                    GamesController.getInstance()
+                    GamesController.getInstance().removeDisconnectedPlayer(client)
                 }
             }
             client!!.clientStatus = ClientStatus.DISCONNECTED
