@@ -6,15 +6,23 @@ plugins {
     application
     kotlin("jvm") version "1.6.20"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.20"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "org.ciphen"
 version = "0.0.1"
+
 application {
-    mainClass.set("org.ciphen.polyhoot.ApplicationKt")
+    mainClass.set("org.ciphen.polyhoot.Application")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+tasks.shadowJar {
+    archiveBaseName.set("polyhoot_server")
+    archiveClassifier.set("")
+    archiveVersion.set("")
 }
 
 repositories {
