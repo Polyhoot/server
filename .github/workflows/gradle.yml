@@ -32,8 +32,13 @@ jobs:
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
       with:
         arguments: shadowJar
-    - name: Upload artifacts
+    - name: Post polyhoot server JAR
       uses: actions/upload-artifact@v3
       with:
         name: polyhoot_server
         path: build/libs
+    - name: Post mockhost JAR
+      uses: actions/upload-artifact@v3
+      with:
+        name: mockhost
+        path: mockhost/build/libs
