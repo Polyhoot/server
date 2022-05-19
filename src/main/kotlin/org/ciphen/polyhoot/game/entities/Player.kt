@@ -6,5 +6,5 @@ data class Player(
     val client: Client,
     val gameId: Int,
     val name: String,
-    val score: Int = 0,
+    var score: Int = 0,
 )

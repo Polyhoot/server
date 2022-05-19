@@ -14,6 +14,7 @@ import org.ciphen.polyhoot.game.session.events.GameSessionEventType
 import org.ciphen.polyhoot.game.utils.GamesController
 import org.ciphen.polyhoot.services.entities.Client
 import org.ciphen.polyhoot.services.enums.ClientType
+import org.ciphen.polyhoot.services.utils.ClientManager
 import java.util.*
 
 class Session {
@@ -23,23 +24,27 @@ class Session {
                 var data: String
                 var player: Player? = null
                 var game: GameSession? = null
-                if (incoming.receive().also { data = (it as Frame.Text).readText() } is Frame.Text) {
-                    val json = Json.parseToJsonElement(data)
-                    val gameId = json.jsonObject["gameId"]!!.jsonPrimitive.int
-                    val name = json.jsonObject["name"]!!.jsonPrimitive.content
-                    game = GamesController.getInstance().getGameById(gameId)
-                    if (game != null) {
-                        println("Session: Connecting player $name to game ID $gameId")
-                        player = Player(Client(this, UUID.randomUUID().toString(), ClientType.PLAYER), gameId, name)
-                        game.connectPlayer(player)
-                    }
-                }
                 for (frame in incoming) {
                     if (frame is Frame.Text) {
                         val frameData = frame.readText()
                         val json = Json.parseToJsonElement(frameData)
                         val event = GameSessionEventType.fromString(json.jsonObject["event"]!!.jsonPrimitive.content)
-                        game!!.gameSessionEventHandler.onPlayerEvent(player!!, event)
+                        if (event == GameSessionEventType.CONNECT) {
+                            val gameId = json.jsonObject["gameId"]!!.jsonPrimitive.int
+                            val name = json.jsonObject["name"]!!.jsonPrimitive.content
+                            game = GamesController.getInstance().getGameById(gameId)
+                            if (game != null) {
+                                println("Session: Connecting player $name to game ID $gameId")
+                                val client = Client(this, UUID.randomUUID().toString(), ClientType.PLAYER)
+                                ClientManager.getInstance().registerClient(client)
+                                player = Player(client, gameId, name)
+                                if (!game.connectPlayer(player)) {
+                                    game.gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.NAME_TAKEN)
+                                }
+                            }
+                        } else {
+                            game!!.gameSessionEventHandler.onPlayerEvent(player!!, event, frameData)
+                        }
                     }
                 }
             }

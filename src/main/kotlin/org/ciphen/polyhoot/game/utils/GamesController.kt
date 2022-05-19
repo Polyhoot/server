@@ -1,8 +1,10 @@
 package org.ciphen.polyhoot.game.utils
 
 import io.ktor.websocket.*
+import kotlinx.coroutines.cancel
 import org.ciphen.polyhoot.game.session.GameSession
 import org.ciphen.polyhoot.game.entities.Player
+import org.ciphen.polyhoot.game.session.events.GameSessionEventType
 import org.ciphen.polyhoot.services.entities.Client
 
 class GamesController {
@@ -36,7 +38,14 @@ class GamesController {
         }
     }
 
-    private fun getGameByHost(client: Client): GameSession? = games.filter { it.value.host == client }[0]
+    private fun getGameByHost(client: Client): GameSession? {
+        games.forEach {
+            if (it.value.host!!.uuid == client.uuid) {
+                return it.value
+            }
+        }
+        return null
+    }
 
     suspend fun hostDisconnected(client: Client): Boolean {
         removeGame((getGameByHost(client) ?: return false).gameId)
@@ -44,8 +53,11 @@ class GamesController {
     }
 
     private suspend fun removeGame(gameId: Int) {
-        games[gameId]!!.players.values.forEach {
-            it.client.session.close(CloseReason(CloseReason.Codes.GOING_AWAY, "Game has ended."))
+        games[gameId]!!.players.forEach {
+            games[gameId]!!.gameSessionEventHandler.notifyPlayer(
+                it.value, GameSessionEventType.FORCE_STOP
+            )
+            it.value.client.session.cancel()
         }
         games.remove(gameId)
     }

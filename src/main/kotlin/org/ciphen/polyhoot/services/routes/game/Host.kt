@@ -10,6 +10,7 @@ import org.ciphen.polyhoot.game.host.GameHostEventHandler
 import org.ciphen.polyhoot.game.utils.GamesController
 import org.ciphen.polyhoot.services.entities.Client
 import org.ciphen.polyhoot.services.enums.ClientType
+import org.ciphen.polyhoot.services.utils.ClientManager
 import java.util.*
 
 class Host {
@@ -36,6 +37,7 @@ class Host {
                         close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Should be connect action!"))
                     } else {
                         val client = Client(this, UUID.randomUUID().toString(), ClientType.HOST)
+                        ClientManager.getInstance().registerClient(client)
                         val gameId = json.jsonObject["gameId"]!!.jsonPrimitive.int
                         val game = GamesController.getInstance().getGameById(gameId)
                         if (game != null) {

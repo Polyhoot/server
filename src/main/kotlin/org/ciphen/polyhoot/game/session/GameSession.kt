@@ -5,9 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.*
 import org.ciphen.polyhoot.domain.Pack
 import org.ciphen.polyhoot.game.entities.Host
 import org.ciphen.polyhoot.game.entities.Player
@@ -42,10 +40,12 @@ class GameSession(val gameId: Int): Observer {
     val gameSessionEventHandler = GameSessionEventHandler(this)
     // Initialize without host
     var host: Client? = null
+    var currAnswer = 0
     private var currId = 0
 
     init {
         println("GameSession: Created new game session with Game ID $gameId!")
+        gameSessionEventHandler.addObserver(this)
     }
 
     fun startGame() {
@@ -56,28 +56,73 @@ class GameSession(val gameId: Int): Observer {
         }
     }
 
-    fun nextQuestion() {
+    fun nextQuestion(duration: Int, answer: Int) {
+        currAnswer = answer
         players.forEach { (idx, player) ->
             runBlocking {
-                gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.QUESTION)
+                gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.QUESTION, arrayOf(Pair("duration", JsonPrimitive(duration))))
             }
         }
     }
 
-    fun showScoreboard() {
+    suspend fun showScoreboard() {
+        val list = mutableListOf<JsonElement>()
+        players.forEach { idx, player ->
+            list.add(
+                JsonObject(
+                    mapOf(
+                        Pair("name", JsonPrimitive(player.name)),
+                        Pair("score", JsonPrimitive(player.score))
+                    )
+                )
+            )
+        }
+        val jsonArray = JsonArray(list)
+        host!!.session.outgoing.send(
+            Frame.Text(
+                JsonObject(
+                    mapOf(
+                        Pair("action", JsonPrimitive(GameHostActions.SCOREBOARD.toString())),
+                        Pair("scoreboard", jsonArray)
+                    )
+                ).toString()
+            )
+        )
+    }
+
+    fun questionTimeUp() {
         players.forEach { (idx, player) ->
             runBlocking {
-                gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.SCOREBOARD)
+                gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.TIME_UP)
+            }
+        }
+    }
+
+    fun getReady() {
+        players.forEach {
+            runBlocking {
+                gameSessionEventHandler.notifyPlayer(it.value, GameSessionEventType.GET_READY)
+            }
+        }
+    }
+
+    fun endGame() {
+        players.forEach {
+            runBlocking {
+                gameSessionEventHandler.notifyPlayer(it.value, GameSessionEventType.END)
             }
         }
     }
 
     suspend fun connectPlayer(player: Player): Boolean {
-        if (players.filter { it.value == player }.isNotEmpty() || host == null) {
+        if (players.filter { it.value == player || it.value.name == player.name }.isNotEmpty() || host == null) {
             return false
         }
         players[currId] = player
         currId++
+        runBlocking {
+            gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.CONNECT)
+        }
         host!!.session.outgoing.send(Frame.Text(JsonObject(mapOf(Pair("action", JsonPrimitive(GameHostActions.PLAYER_CONNECTED.toString())), Pair("name", JsonPrimitive(player.name)))).toString()))
         return true
     }
@@ -93,6 +138,25 @@ class GameSession(val gameId: Int): Observer {
         players.filter { it.value.client == client }.forEach {
             players.remove(it.key)
         }
+    }
+
+    suspend fun registerAnswer(player: Player, answer: Int, score: Int) {
+        if (answer == currAnswer) {
+            player.score += score
+            println("Player ${player.name} got the answer right! Score: ${player.score}")
+        } else {
+            println("Player ${player.name} has the wrong answer! Score: ${player.score}")
+        }
+        host!!.session.outgoing.send(
+            Frame.Text(
+                JsonObject(
+                    mapOf(
+                        Pair("action", JsonPrimitive(GameHostActions.ANSWER.toString())),
+                        Pair("answer", JsonPrimitive(answer))
+                    )
+                ).toString()
+            )
+        )
     }
 
     override fun update(o: Observable?, arg: Any?) {
