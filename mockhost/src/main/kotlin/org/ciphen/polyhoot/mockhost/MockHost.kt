@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
 import kotlin.properties.Delegates
+import kotlin.system.exitProcess
 
 class MockHost(private val domain: String, private val port: Int) {
     private val client = HttpClient(Java) {
@@ -168,7 +169,7 @@ class MockHost(private val domain: String, private val port: Int) {
                     ).toString()
                 )
             )
-            while (scope.isActive) {}
+            exitProcess(0)
         }
     }
 }
