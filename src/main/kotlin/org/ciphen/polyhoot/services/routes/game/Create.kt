@@ -14,22 +14,19 @@ class Create {
     init {
         Application.getInstance().ktorApplication.routing {
             webSocket("/game/create") {
-                var data: Frame.Text
-                if (incoming.receive().also { data = it as Frame.Text } is Frame.Text) {
-                    val gameId = GameActions.Create()
-                    outgoing.send(
-                        Frame.Text(
-                            JsonObject(
-                                mapOf(
-                                    Pair(
-                                        "gameId",
-                                        JsonPrimitive(gameId)
-                                    )
+                val gameId = GameActions.Create()
+                outgoing.send(
+                    Frame.Text(
+                        JsonObject(
+                            mapOf(
+                                Pair(
+                                    "gameId",
+                                    JsonPrimitive(gameId)
                                 )
-                            ).toString()
-                        )
+                            )
+                        ).toString()
                     )
-                }
+                )
             }
         }
     }
