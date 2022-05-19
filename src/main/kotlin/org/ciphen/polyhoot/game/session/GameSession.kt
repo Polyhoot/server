@@ -17,7 +17,7 @@ import org.ciphen.polyhoot.services.entities.Client
 import java.util.*
 import kotlin.random.Random
 
-class GameSession(val gameId: Int): Observer {
+class GameSession(val gameId: Int) {
     companion object {
         private const val GAME_ID_MAX = 999999
         private const val GAME_ID_MIN = 100000
@@ -45,7 +45,6 @@ class GameSession(val gameId: Int): Observer {
 
     init {
         println("GameSession: Created new game session with Game ID $gameId!")
-        gameSessionEventHandler.addObserver(this)
     }
 
     fun startGame() {
@@ -157,9 +156,5 @@ class GameSession(val gameId: Int): Observer {
                 ).toString()
             )
         )
-    }
-
-    override fun update(o: Observable?, arg: Any?) {
-
     }
 }

@@ -19,7 +19,7 @@ enum class GameSessionEventType {
     }
 }
 
-class GameSessionEventHandler(val gameSession: GameSession): Observable() {
+class GameSessionEventHandler(val gameSession: GameSession) {
     suspend fun onPlayerEvent(player: Player, event: GameSessionEventType, args: String = "") {
         when (event) {
             GameSessionEventType.ANSWER -> {
