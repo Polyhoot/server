@@ -53,14 +53,17 @@ class GameSession(val gameId: Int) {
         }
     }
 
-    fun nextQuestion(duration: Int, answer: Int) {
+    fun nextQuestion(duration: Int, answer: Int, text: String = "") {
         currAnswer = answer
         players.forEach { (_, player) ->
             runBlocking {
                 gameSessionEventHandler.notifyPlayer(
                     player,
                     GameSessionEventType.QUESTION,
-                    arrayOf(Pair("duration", JsonPrimitive(duration)))
+                    arrayOf(
+                        Pair("duration", JsonPrimitive(duration)),
+                        Pair("text", JsonPrimitive(text))
+                    )
                 )
             }
         }
