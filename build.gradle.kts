@@ -23,6 +23,9 @@ tasks.shadowJar {
     archiveBaseName.set("polyhoot_server")
     archiveClassifier.set("")
     archiveVersion.set("")
+    minimize {
+        exclude(dependency("org.litote.kmongo:.*:.*"))
+    }
 }
 
 repositories {
