@@ -1,13 +1,14 @@
 package org.ciphen.polyhoot.domain
-import io.ktor.http.*
-import kotlinx.serialization.*
+
+import kotlinx.serialization.Serializable
+
 data class User(
     val id: String,
     val name: String,
     val password: String,
     val email: String,
     val packs: List<String>
-    )
+)
 
 @Serializable
 data class CreateUserDTO(

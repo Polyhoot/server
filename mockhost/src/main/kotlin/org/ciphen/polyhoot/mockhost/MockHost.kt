@@ -5,6 +5,7 @@ import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -19,6 +20,7 @@ class MockHost(private val domain: String, private val port: Int) {
 
     private var gameId by Delegates.notNull<Int>()
 
+    @OptIn(DelicateCoroutinesApi::class)
     suspend fun start() {
         client.webSocket(
             method = HttpMethod.Get,
@@ -26,7 +28,8 @@ class MockHost(private val domain: String, private val port: Int) {
             port = port,
             path = "/game/create"
         ) {
-            gameId = Json.parseToJsonElement((incoming.receive() as Frame.Text).readText()).jsonObject["gameId"]!!.jsonPrimitive.int
+            gameId =
+                Json.parseToJsonElement((incoming.receive() as Frame.Text).readText()).jsonObject["gameId"]!!.jsonPrimitive.int
             println("Received game ID: $gameId")
         }
         client.webSocket(
@@ -35,7 +38,7 @@ class MockHost(private val domain: String, private val port: Int) {
             port = port,
             path = "/game/host"
         ) {
-            val scope = GlobalScope.launch {
+            GlobalScope.launch {
                 for (frame in incoming) {
                     val text = (frame as Frame.Text).readText()
                     println(text)

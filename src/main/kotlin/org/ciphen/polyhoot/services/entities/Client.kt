@@ -16,5 +16,5 @@ data class Client(
     fun isAlive() = !session.outgoing.isClosedForSend
 
     override fun toString(): String =
-        "${clientStatus} Client typed ${clientType} with uuid = $uuid"
+        "$clientStatus Client typed $clientType with uuid = $uuid"
 }

@@ -9,10 +9,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.ciphen.polyhoot.domain.FileResponse
-import org.ciphen.polyhoot.domain.Pack
-import org.ciphen.polyhoot.domain.PackResponse
-import org.ciphen.polyhoot.domain.User
-import org.litote.kmongo.eq
 import java.io.File
 
 fun Application.fileRouting() {
@@ -23,7 +19,7 @@ fun Application.fileRouting() {
                 val fileId = NanoIdUtils.randomNanoId()
                 var fileName = ""
                 multipart.forEachPart { part ->
-                    if(part is PartData.FileItem) {
+                    if (part is PartData.FileItem) {
                         val name = part.originalFileName!!
                         fileName = name
                         val file = File("uploads/${fileId}_${name}")
@@ -38,8 +34,9 @@ fun Application.fileRouting() {
                 }
                 call.respond(
                     HttpStatusCode.OK, FileResponse(
-                    url = "/file/get/${fileId}_${fileName}"
-                ))
+                        url = "/file/get/${fileId}_${fileName}"
+                    )
+                )
             }
             get("file/get/{name}") {
                 if (call.parameters["name"]?.isNotEmpty() == true) {

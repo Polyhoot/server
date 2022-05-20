@@ -1,7 +1,5 @@
 package org.ciphen.polyhoot.routes
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -13,11 +11,7 @@ import io.ktor.server.routing.*
 import org.ciphen.polyhoot.db.DB
 import org.ciphen.polyhoot.domain.*
 import org.litote.kmongo.*
-import org.litote.kmongo.coroutine.aggregate
-import org.litote.kmongo.util.idValue
-import org.mindrot.jbcrypt.BCrypt
 import java.time.LocalDateTime
-import java.util.*
 
 fun Application.packRouting() {
     val db = DB.database
@@ -34,14 +28,14 @@ fun Application.packRouting() {
                         descending(Pack::createdAt)
                     ).limit(max)
                     val user = users.findOne(User::id eq principal.payload.getClaim("id").asString())!!
-                    val result = GetPacksResponse(packsFromDb.toList().map {
-                        e -> PackResponse(
-                        id = e.id,
-                        name = e.name,
-                        questions = e.questions,
-                        authorId = e.authorId,
-                        authorName = user.name,
-                        createdAt = e.createdAt
+                    val result = GetPacksResponse(packsFromDb.toList().map { e ->
+                        PackResponse(
+                            id = e.id,
+                            name = e.name,
+                            questions = e.questions,
+                            authorId = e.authorId,
+                            authorName = user.name,
+                            createdAt = e.createdAt
                         )
                     })
 
@@ -53,14 +47,16 @@ fun Application.packRouting() {
                         if (pack != null) {
                             val user = users.findOne(User::id eq pack.authorId)
                             if (user != null) {
-                                call.respond(HttpStatusCode.OK, PackResponse(
-                                    id = pack.id,
-                                    name = pack.name,
-                                    questions = pack.questions,
-                                    authorId = pack.authorId,
-                                    authorName = user.name,
-                                    createdAt = pack.createdAt
-                                ))
+                                call.respond(
+                                    HttpStatusCode.OK, PackResponse(
+                                        id = pack.id,
+                                        name = pack.name,
+                                        questions = pack.questions,
+                                        authorId = pack.authorId,
+                                        authorName = user.name,
+                                        createdAt = pack.createdAt
+                                    )
+                                )
                             }
                             return@get
                         }
@@ -101,7 +97,10 @@ fun Application.packRouting() {
                     val principal = call.principal<JWTPrincipal>()
 
                     val pack = packs.findOneAndUpdate(
-                        and(Pack::id eq packDTO.packId, Pack::authorId eq principal!!.payload.getClaim("id").asString()),
+                        and(
+                            Pack::id eq packDTO.packId,
+                            Pack::authorId eq principal!!.payload.getClaim("id").asString()
+                        ),
                         set(Pack::name setTo packDTO.name, Pack::questions setTo packDTO.questions)
                     )
                     if (pack != null)

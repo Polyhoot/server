@@ -13,7 +13,6 @@ import io.ktor.server.routing.*
 import org.ciphen.polyhoot.db.DB
 import org.ciphen.polyhoot.domain.*
 import org.litote.kmongo.eq
-import org.litote.kmongo.util.idValue
 import org.mindrot.jbcrypt.BCrypt
 
 fun Application.userRouting() {
@@ -26,7 +25,7 @@ fun Application.userRouting() {
                 val findUser: Long = users.countDocuments(User::email eq userDTO.email)
 
                 if (findUser > 0) {
-                    call.respond(HttpStatusCode.Conflict, CreateUserResponse(409,null, "Email already exists"))
+                    call.respond(HttpStatusCode.Conflict, CreateUserResponse(409, null, "Email already exists"))
                     return@post
                 }
 
@@ -40,29 +39,33 @@ fun Application.userRouting() {
                 users.insertOne(newUser)
 
                 call.respond(
-                    CreateUserResponse(200, JWT.create()
-                        .withClaim("id", newUser.id)
-                        .withClaim("email", userDTO.email)
-                        .sign(Algorithm.HMAC256(System.getenv("JWT_SECRET"))), null)
+                    CreateUserResponse(
+                        200, JWT.create()
+                            .withClaim("id", newUser.id)
+                            .withClaim("email", userDTO.email)
+                            .sign(Algorithm.HMAC256(System.getenv("JWT_SECRET"))), null
+                    )
                 )
             }
             post("/login") {
                 val loginDTO = call.receive<LoginDTO>()
                 val user = users.findOne(User::email eq loginDTO.email)
                 if (user == null) {
-                    call.respond(HttpStatusCode.NotFound, CreateUserResponse(404,null, "User not found"))
+                    call.respond(HttpStatusCode.NotFound, CreateUserResponse(404, null, "User not found"))
                     return@post
                 }
                 val compare = BCrypt.checkpw(loginDTO.password, user.password)
                 if (compare) {
                     call.respond(
-                        CreateUserResponse(200, JWT.create()
-                            .withClaim("id", user.id)
-                            .withClaim("email", user.email)
-                            .sign(Algorithm.HMAC256(System.getenv("JWT_SECRET"))), null)
+                        CreateUserResponse(
+                            200, JWT.create()
+                                .withClaim("id", user.id)
+                                .withClaim("email", user.email)
+                                .sign(Algorithm.HMAC256(System.getenv("JWT_SECRET"))), null
+                        )
                     )
                 } else {
-                    call.respond(HttpStatusCode.Unauthorized, CreateUserResponse(403,null, "Incorrect password"))
+                    call.respond(HttpStatusCode.Unauthorized, CreateUserResponse(403, null, "Incorrect password"))
                 }
             }
             authenticate("auth-jwt") {
@@ -70,7 +73,7 @@ fun Application.userRouting() {
                     val principal = call.principal<JWTPrincipal>()
                     val user = users.findOne(User::id eq principal!!.payload.getClaim("id").asString())
                     if (user == null) {
-                        call.respond(HttpStatusCode.NotFound, CreateUserResponse(404,null, "User not found"))
+                        call.respond(HttpStatusCode.NotFound, CreateUserResponse(404, null, "User not found"))
                         return@get
                     }
                     call.respond(

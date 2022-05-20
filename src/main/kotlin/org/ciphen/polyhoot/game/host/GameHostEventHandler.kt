@@ -10,7 +10,7 @@ import org.ciphen.polyhoot.utils.Log
 
 class GameHostEventHandler(val client: Client, val game: GameSession) {
     suspend fun onHostAction(action: GameHostActions, data: String) {
-        Log.logger!!.I("GameHostEventHandler", "Received action: ${action} with data $data")
+        Log.logger!!.i("GameHostEventHandler", "Received action: $action with data $data")
         when (action) {
             GameHostActions.CONNECT -> {
                 game.connectHost(client)

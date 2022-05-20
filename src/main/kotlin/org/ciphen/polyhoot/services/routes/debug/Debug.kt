@@ -15,8 +15,7 @@ class Debug {
                     for (frame in incoming) {
                         when (frame) {
                             is Frame.Text -> {
-                                val text = frame.readText()
-                                when (text) {
+                                when (frame.readText()) {
                                     "listSessions" -> outgoing.send(Frame.Text(GamesController.getInstance().games.toString()))
                                 }
                             }

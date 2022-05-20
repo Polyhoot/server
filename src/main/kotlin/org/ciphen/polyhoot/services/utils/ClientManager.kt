@@ -1,7 +1,8 @@
 package org.ciphen.polyhoot.services.utils
 
-import io.ktor.websocket.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.ciphen.polyhoot.game.utils.GamesController
 import org.ciphen.polyhoot.services.entities.Client
 import org.ciphen.polyhoot.services.enums.ClientStatus
@@ -40,7 +41,7 @@ class ClientManager {
         clients[client.uuid] = client
     }
 
-    suspend fun removeClient(uuid: String) {
+    private suspend fun removeClient(uuid: String) {
         println("Removing client with uuid = $uuid")
         val client: Client?
         if (getClient(uuid).also { client = it } != null) {
@@ -56,24 +57,10 @@ class ClientManager {
                     GamesController.getInstance().removeDisconnectedPlayer(client)
                 }
             }
-            client!!.clientStatus = ClientStatus.DISCONNECTED
+            client.clientStatus = ClientStatus.DISCONNECTED
             clients.remove(uuid)
         }
     }
 
-    fun hasClient(uuid: String) = uuid in clients
-
-    fun getClient(uuid: String): Client? = clients[uuid]
-
-    suspend fun disconnectClient(uuid: String) {
-        coroutineScope {
-            launch {
-                val client = getClient(uuid)!!
-                client.session.outgoing.send(Frame.Text("Closing connection. Bye!"))
-                client.session.close(CloseReason(CloseReason.Codes.GOING_AWAY, "Connection closed."))
-                client.clientStatus = ClientStatus.DISCONNECTED
-                removeClient(uuid)
-            }
-        }
-    }
+    private fun getClient(uuid: String): Client? = clients[uuid]
 }

@@ -1,20 +1,17 @@
 package org.ciphen.polyhoot.game.session
 
 import io.ktor.websocket.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.*
-import org.ciphen.polyhoot.domain.Pack
-import org.ciphen.polyhoot.game.entities.Host
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import org.ciphen.polyhoot.game.entities.Player
 import org.ciphen.polyhoot.game.host.GameHostActions
 import org.ciphen.polyhoot.game.session.events.GameSessionEventHandler
 import org.ciphen.polyhoot.game.session.events.GameSessionEventType
 import org.ciphen.polyhoot.game.utils.GamesController
 import org.ciphen.polyhoot.services.entities.Client
-import java.util.*
 import kotlin.random.Random
 
 class GameSession(val gameId: Int) {
@@ -38,9 +35,10 @@ class GameSession(val gameId: Int) {
 
     val players: MutableMap<Int, Player> = mutableMapOf()
     val gameSessionEventHandler = GameSessionEventHandler(this)
+
     // Initialize without host
     var host: Client? = null
-    var currAnswer = 0
+    private var currAnswer = 0
     private var currId = 0
 
     init {
@@ -48,7 +46,7 @@ class GameSession(val gameId: Int) {
     }
 
     fun startGame() {
-        players.forEach { (idx, player) ->
+        players.forEach { (_, player) ->
             runBlocking {
                 gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.START_GAME)
             }
@@ -57,16 +55,20 @@ class GameSession(val gameId: Int) {
 
     fun nextQuestion(duration: Int, answer: Int) {
         currAnswer = answer
-        players.forEach { (idx, player) ->
+        players.forEach { (_, player) ->
             runBlocking {
-                gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.QUESTION, arrayOf(Pair("duration", JsonPrimitive(duration))))
+                gameSessionEventHandler.notifyPlayer(
+                    player,
+                    GameSessionEventType.QUESTION,
+                    arrayOf(Pair("duration", JsonPrimitive(duration)))
+                )
             }
         }
     }
 
     suspend fun showScoreboard() {
         val list = mutableListOf<JsonElement>()
-        players.forEach { idx, player ->
+        players.forEach { (_, player) ->
             list.add(
                 JsonObject(
                     mapOf(
@@ -90,7 +92,7 @@ class GameSession(val gameId: Int) {
     }
 
     fun questionTimeUp() {
-        players.forEach { (idx, player) ->
+        players.forEach { (_, player) ->
             runBlocking {
                 gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.TIME_UP)
             }
@@ -122,7 +124,18 @@ class GameSession(val gameId: Int) {
         runBlocking {
             gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.CONNECT)
         }
-        host!!.session.outgoing.send(Frame.Text(JsonObject(mapOf(Pair("action", JsonPrimitive(GameHostActions.PLAYER_CONNECTED.toString())), Pair("name", JsonPrimitive(player.name)))).toString()))
+        host!!.session.outgoing.send(
+            Frame.Text(
+                JsonObject(
+                    mapOf(
+                        Pair(
+                            "action",
+                            JsonPrimitive(GameHostActions.PLAYER_CONNECTED.toString())
+                        ), Pair("name", JsonPrimitive(player.name))
+                    )
+                ).toString()
+            )
+        )
         return true
     }
 

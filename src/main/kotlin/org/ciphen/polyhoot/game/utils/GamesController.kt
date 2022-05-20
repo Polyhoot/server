@@ -1,9 +1,7 @@
 package org.ciphen.polyhoot.game.utils
 
-import io.ktor.websocket.*
 import kotlinx.coroutines.cancel
 import org.ciphen.polyhoot.game.session.GameSession
-import org.ciphen.polyhoot.game.entities.Player
 import org.ciphen.polyhoot.game.session.events.GameSessionEventType
 import org.ciphen.polyhoot.services.entities.Client
 
@@ -28,16 +26,6 @@ class GamesController {
 
     fun getGameById(gameId: Int): GameSession? = games[gameId]
 
-    suspend fun connectPlayer(player: Player): Boolean {
-        if (!games.keys.contains(player.gameId)) {
-            return false
-        } else {
-            println("Adding player named ${player.name} with uuid = ${player.client.uuid} to game with uid ${player.gameId}")
-            games[player.gameId]!!.connectPlayer(player)
-            return true
-        }
-    }
-
     private fun getGameByHost(client: Client): GameSession? {
         games.forEach {
             if (it.value.host!!.uuid == client.uuid) {
@@ -47,11 +35,10 @@ class GamesController {
         return null
     }
 
-    fun removeDisconnectedPlayer(client: Client): Boolean {
+    fun removeDisconnectedPlayer(client: Client) {
         games.forEach {
             it.value.removePlayer(client)
         }
-        return true
     }
 
     suspend fun hostDisconnected(client: Client): Boolean {

@@ -5,12 +5,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.text.DateFormat
-import java.util.Date
+import java.util.*
 import kotlin.system.exitProcess
 
 class Log {
     companion object {
-        private val TAG = "Log"
+        private const val TAG = "Log"
 
         var logger: Log? = null
             get() {
@@ -21,7 +21,7 @@ class Log {
             }
     }
 
-    val logFileName: String
+    private val logFileName: String
     private val file: FileOutputStream
     private val writer: OutputStreamWriter
 
@@ -30,7 +30,7 @@ class Log {
         if (!logFolder.exists()) {
             logFolder.mkdir()
         }
-        logFileName = "log-${java.lang.System.currentTimeMillis()}.txt"
+        logFileName = "log-${System.currentTimeMillis()}.txt"
         file = FileOutputStream("logs/$logFileName")
         writer = file.writer()
     }
@@ -40,20 +40,20 @@ class Log {
         writer.write(line + "\n")
     }
 
-    fun D(tag: String, message: String) {
+    fun d(tag: String, message: String) {
         if (Application.getInstance().applicationConfig.debug)
             message.split("\n").forEach {
                 write("${getTimeDate()} D $tag: $it")
             }
     }
 
-    fun E(tag: String, message: String) {
+    fun e(tag: String, message: String) {
         message.split("\n").forEach {
             write("${getTimeDate()} E $tag: $it")
         }
     }
 
-    fun F(tag: String, message: String) {
+    fun f(tag: String, message: String) {
         message.split("\n").forEach {
             write("${getTimeDate()} F $tag: $it")
         }
@@ -61,7 +61,7 @@ class Log {
         exitProcess(1)
     }
 
-    fun I(tag: String, message: String) {
+    fun i(tag: String, message: String) {
         message.split("\n").forEach {
             write("${getTimeDate()} I $tag: $it")
         }
@@ -70,8 +70,8 @@ class Log {
     private fun getTimeDate(): String = DateFormat.getDateTimeInstance().format(Date())
 
     fun onDestroy() {
-        I(TAG, "Closing writer...")
-        I(TAG, "Have a great day!")
+        i(TAG, "Closing writer...")
+        i(TAG, "Have a great day!")
         writer.close()
         logger = null
     }

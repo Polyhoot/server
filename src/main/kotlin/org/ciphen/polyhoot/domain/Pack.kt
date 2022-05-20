@@ -1,6 +1,7 @@
 package org.ciphen.polyhoot.domain
 
 import kotlinx.serialization.Serializable
+
 @Serializable
 data class Pack(
     val id: String,
@@ -19,6 +20,7 @@ data class Question(
     val media: Media?,
     val answers: List<Answer>
 )
+
 @Serializable
 data class Media(
     val url: String,
@@ -27,6 +29,7 @@ data class Media(
     val hideName: Boolean?,
     val type: String
 )
+
 @Serializable
 data class Answer(
     val text: String,
