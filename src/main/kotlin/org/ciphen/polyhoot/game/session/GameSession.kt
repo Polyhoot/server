@@ -97,7 +97,11 @@ class GameSession(val gameId: Int) {
     fun questionTimeUp() {
         players.forEach { (_, player) ->
             runBlocking {
-                gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.TIME_UP)
+                gameSessionEventHandler.notifyPlayer(
+                    player,
+                    GameSessionEventType.TIME_UP,
+                    arrayOf(Pair("score", JsonPrimitive(player.score)))
+                )
             }
         }
     }
