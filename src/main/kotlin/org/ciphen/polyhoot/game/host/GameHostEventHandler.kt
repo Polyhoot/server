@@ -22,7 +22,7 @@ class GameHostEventHandler(val client: Client, val game: GameSession) {
                 val json = Json.parseToJsonElement(data)
                 val duration = json.jsonObject["duration"]!!.jsonPrimitive.int
                 val answer = json.jsonObject["answer"]!!.jsonPrimitive.int
-                val text = json.jsonObject["text"]!!.jsonPrimitive.content
+                val text = json.jsonObject["text"]?.jsonPrimitive?.content ?: ""
                 game.nextQuestion(duration, answer, text)
             }
             GameHostActions.TIME_UP -> {
