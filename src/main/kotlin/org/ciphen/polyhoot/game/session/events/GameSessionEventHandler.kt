@@ -6,7 +6,7 @@ import org.ciphen.polyhoot.game.entities.Player
 import org.ciphen.polyhoot.game.session.GameSession
 
 enum class GameSessionEventType {
-    CONNECT, START_GAME, QUESTION, END, STATS, INVALID, TIME_UP, NAME_TAKEN, ANSWER, FORCE_STOP, GET_READY;
+    CONNECT, START_GAME, QUESTION, END, STATS, INVALID, TIME_UP, NAME_TAKEN, ANSWER, FORCE_STOP, GET_READY, NO_SUCH_GAME;
 
     companion object {
         fun fromString(s: String): GameSessionEventType =

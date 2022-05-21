@@ -3,10 +3,8 @@ package org.ciphen.polyhoot.services.routes.game
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.coroutines.cancel
+import kotlinx.serialization.json.*
 import org.ciphen.polyhoot.Application
 import org.ciphen.polyhoot.game.entities.Player
 import org.ciphen.polyhoot.game.session.GameSession
@@ -41,6 +39,17 @@ class Session {
                                 if (!game.connectPlayer(player)) {
                                     game.gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.NAME_TAKEN)
                                 }
+                            } else {
+                                outgoing.send(
+                                    Frame.Text(
+                                        JsonObject(
+                                            mapOf(
+                                                Pair("event", JsonPrimitive(GameSessionEventType.NO_SUCH_GAME.toString()))
+                                            )
+                                        ).toString()
+                                    )
+                                )
+                                close()
                             }
                         } else {
                             game!!.gameSessionEventHandler.onPlayerEvent(player!!, event, frameData)
