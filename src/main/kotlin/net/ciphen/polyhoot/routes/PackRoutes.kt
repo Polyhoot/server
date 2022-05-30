@@ -63,6 +63,7 @@ fun Application.packRouting() {
                     }
                     call.respond(HttpStatusCode.NotFound)
                 }
+                // Note: not used on front-end
                 post("/create") {
                     val packDTO = call.receive<CreatePackDTO>()
                     val principal = call.principal<JWTPrincipal>()
