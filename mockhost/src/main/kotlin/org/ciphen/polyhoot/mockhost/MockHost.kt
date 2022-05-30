@@ -22,22 +22,12 @@ class MockHost(private val domain: String, private val port: Int) {
 
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun start() {
-        client.webSocket(
-            method = HttpMethod.Get,
-            host = domain,
-            port = port,
-            path = "/game/create"
-        ) {
+        client.webSocket("wss://polyhoot.ciphen.net/game/create") {
             gameId =
                 Json.parseToJsonElement((incoming.receive() as Frame.Text).readText()).jsonObject["gameId"]!!.jsonPrimitive.int
             println("Received game ID: $gameId")
         }
-        client.webSocket(
-            method = HttpMethod.Get,
-            host = domain,
-            port = port,
-            path = "/game/host"
-        ) {
+        client.webSocket("wss://polyhoot.ciphen.net/game/host") {
             GlobalScope.launch {
                 for (frame in incoming) {
                     val text = (frame as Frame.Text).readText()
@@ -179,6 +169,6 @@ class MockHost(private val domain: String, private val port: Int) {
 
 fun main() {
     runBlocking {
-        MockHost("0.0.0.0", 8080).start()
+        MockHost("polyhoot.ciphen.net", 443).start()
     }
 }

@@ -9,11 +9,11 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-group = "org.ciphen"
-version = "0.0.1"
+group = "net.ciphen.polyhoot"
+version = "one"
 
 application {
-    mainClass.set("org.ciphen.polyhoot.Application")
+    mainClass.set("net.ciphen.polyhoot.Application")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
