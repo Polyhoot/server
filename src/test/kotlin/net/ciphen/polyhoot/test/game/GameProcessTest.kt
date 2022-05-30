@@ -1,5 +1,7 @@
 package net.ciphen.polyhoot.test.game
 
+import de.bwaldvogel.mongo.MongoServer
+import de.bwaldvogel.mongo.backend.memory.MemoryBackend
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.websocket.*
@@ -12,6 +14,7 @@ import net.ciphen.polyhoot.game.session.events.GameSessionEventType
 import net.ciphen.polyhoot.game.utils.GamesController
 import net.ciphen.polyhoot.utils.Log
 import org.junit.Test
+import java.net.BindException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -21,6 +24,9 @@ private const val TAG = "GameProcessTest"
 class GameProcessTest {
     init {
         Thread {
+            try {
+                MongoServer(MemoryBackend()).bind("localhost", 45678)
+            } catch (_: BindException) {}
             Application.main(arrayOf())
         }.start()
     }

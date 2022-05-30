@@ -58,4 +58,5 @@ dependencies {
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
     testImplementation("io.ktor:ktor-client-websockets:$ktor_version")
     testImplementation("io.ktor:ktor-client-java:$ktor_version")
+    testImplementation("de.bwaldvogel:mongo-java-server:1.40.0")
 }
