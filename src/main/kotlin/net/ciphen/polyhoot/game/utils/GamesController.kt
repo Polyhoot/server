@@ -37,7 +37,7 @@ class GamesController {
         return null
     }
 
-    fun removeDisconnectedPlayer(client: Client) {
+    suspend fun removeDisconnectedPlayer(client: Client) {
         games.forEach {
             it.value.removePlayer(client)
         }

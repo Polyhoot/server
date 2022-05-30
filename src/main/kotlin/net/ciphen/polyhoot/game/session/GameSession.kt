@@ -154,8 +154,18 @@ class GameSession(val gameId: Int) {
         }
     }
 
-    fun removePlayer(client: Client) {
+    suspend fun removePlayer(client: Client) {
         players.filter { it.value.client == client }.forEach {
+            host!!.session.outgoing.send(
+                Frame.Text(
+                    JsonObject(
+                        mapOf(
+                            Pair("action", JsonPrimitive(GameHostActions.PLAYER_DISCONNECTED.toString())),
+                            Pair("name", JsonPrimitive(it.value.name))
+                        )
+                    ).toString()
+                )
+            )
             players.remove(it.key)
         }
     }
