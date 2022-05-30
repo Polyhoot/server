@@ -34,3 +34,8 @@ jobs:
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         with:
           arguments: test
+      - name: Post test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_results
+          path: build/test-results
