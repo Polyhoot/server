@@ -2,8 +2,6 @@ package net.ciphen.polyhoot.test.api
 
 import net.ciphen.polyhoot.utils.Log
 import java.net.BindException
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import de.bwaldvogel.mongo.MongoServer
 import de.bwaldvogel.mongo.backend.memory.MemoryBackend
 import io.ktor.client.*
@@ -81,7 +79,7 @@ class ApplicationTest {
         // Create user
         val response = getClient().post("http://localhost:8080/api/user/create") {
             contentType(ContentType.Application.Json)
-            setBody(CreateUserDTO("Test", "helloworld", "test@yahoo.com"))
+            setBody(CreateUserDTO("Ivan Ivanov", "helloworld", "test@yahoo.com"))
         }
         val responseData: CreateUserResponse = response.body()
         assertEquals(HttpStatusCode.OK, response.status)
@@ -131,9 +129,34 @@ class ApplicationTest {
         assertEquals(HttpStatusCode.Unauthorized, response.status)
         assertNull(responseData.token)
     }
+    @Test
+    @Order(4)
+    fun invalidUserLogin() = testApplication {
+        val response = getClient().post("http://localhost:8080/api/user/login") {
+            contentType(ContentType.Application.Json)
+            setBody(LoginDTO( "test", "notfound@yahoo.com"))
+        }
+        val responseData: CreateUserResponse = response.body()
 
+        assertEquals(HttpStatusCode.NotFound, response.status)
+        assertNull(responseData.token)
+    }
     @Test
     @Order(5)
+    fun getUserInfo() = testApplication {
+        println(token)
+        val response = getClient().get("http://localhost:8080/api/user/info") {
+            contentType(ContentType.Application.Json)
+            header("Authorization", "Bearer $token")
+        }
+        val responseData: UserDataResponse = response.body()
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNotNull(responseData.email)
+        assertEquals("Ivan Ivanov", responseData.name)
+    }
+    @Test
+    @Order(6)
     fun savePack() = testApplication {
         println(token)
         val response = getClient().post("http://localhost:8080/api/pack/autosave") {
@@ -146,13 +169,13 @@ class ApplicationTest {
         }
         val responseData: AutosaveInfoResponse = response.body()
 
-        assertEquals(HttpStatusCode.OK, response.status,)
+        assertEquals(HttpStatusCode.OK, response.status)
         assertNotNull(responseData.packId)
         packId = responseData.packId
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     fun getMyPacks() = testApplication {
         val response = getClient().get("http://localhost:8080/api/pack/get/my") {
             contentType(ContentType.Application.Json)
@@ -165,9 +188,24 @@ class ApplicationTest {
         assertTrue(responseData.packs.size == 1)
         assertEquals("Test pack", responseData.packs[0].name)
     }
-
     @Test
-    @Order(7)
+    @Order(8)
+    fun saveNotFoundPack() = testApplication {
+        println(token)
+        val response = getClient().post("http://localhost:8080/api/pack/save") {
+            contentType(ContentType.Application.Json)
+            setBody(SavePackDTO(
+                "helloworld",
+                "Test pack",
+                packQuestions
+            ))
+            header("Authorization", "Bearer $token")
+        }
+
+        assertEquals(HttpStatusCode.NotFound, response.status)
+    }
+    @Test
+    @Order(8)
     fun editPack() = testApplication {
         val response = getClient().post("http://localhost:8080/api/pack/save") {
             contentType(ContentType.Application.Json)
@@ -179,18 +217,28 @@ class ApplicationTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     fun checkUpdatedPack() = testApplication {
-        val response = getClient().get("http://localhost:8080/api/pack/get/my") {
+        val response = getClient().get("http://localhost:8080/api/pack/get/$packId") {
             contentType(ContentType.Application.Json)
             header("Authorization", "Bearer $token")
         }
-        val responseData: GetPacksResponse = response.body()
+        val responseData: PackResponse = response.body()
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertNotNull(responseData.packs)
-        assertTrue(responseData.packs.size == 1)
-        assertEquals("Hello world", responseData.packs[0].name)
+        assertNotNull(responseData.name)
+        assertTrue(responseData.questions.isNotEmpty())
+        assertEquals("Hello world", responseData.name)
+    }
+    @Test
+    @Order(9)
+    fun getNotExistingPack() = testApplication {
+        val response = getClient().get("http://localhost:8080/api/pack/get/helloworld") {
+            contentType(ContentType.Application.Json)
+            header("Authorization", "Bearer $token")
+        }
+
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
 }
