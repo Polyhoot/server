@@ -14,7 +14,7 @@ class WebSocket(application: Application) {
     }
 
     init {
-        Log.logger!!.i(TAG, "Launching WebSockets...")
+        Log.i(TAG, "Launching WebSockets...")
         application.install(WebSockets) {
             pingPeriod = Duration.ofSeconds(15)
             timeout = Duration.ofSeconds(15)

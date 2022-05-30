@@ -7,9 +7,11 @@ import net.ciphen.polyhoot.game.utils.GamesController
 import net.ciphen.polyhoot.services.entities.Client
 import net.ciphen.polyhoot.services.enums.ClientStatus
 import net.ciphen.polyhoot.services.enums.ClientType
+import net.ciphen.polyhoot.utils.Log
 
 class ClientManager {
     companion object {
+        private const val TAG = "ClientManager"
         private var INSTANCE: ClientManager? = null
 
         fun getInstance(): ClientManager {
@@ -23,7 +25,7 @@ class ClientManager {
     private val clients: MutableMap<String, Client> = mutableMapOf()
 
     private suspend fun observeState(client: Client) {
-        println("Observing connection state of client with UUID ${client.uuid}")
+        Log.i(TAG, "Observing connection state of client with UUID ${client.uuid}")
         while (client.isAlive()) {
             client.clientStatus = ClientStatus.CONNECTED
         }
@@ -33,8 +35,7 @@ class ClientManager {
 
     @OptIn(DelicateCoroutinesApi::class)
     fun registerClient(client: Client) {
-        println("Registered client!")
-        println(client)
+        Log.i(TAG, "Registered client with UUID = ${client.uuid}")
         GlobalScope.launch {
             observeState(client)
         }
@@ -42,18 +43,19 @@ class ClientManager {
     }
 
     private suspend fun removeClient(uuid: String) {
-        println("Removing client with uuid = $uuid")
+        Log.i(TAG, "Removing client with UUID = $uuid")
         val client: Client?
         if (getClient(uuid).also { client = it } != null) {
             when (client!!.clientType) {
                 ClientType.HOST -> {
                     if (GamesController.getInstance().hostDisconnected(client)) {
-                        println("Removed game session created by uuid = ${client.uuid}")
+                        Log.i(TAG, "Removed game session created by UUID = ${client.uuid}")
                     } else {
-                        println("Client with uuid = ${client.uuid} didn't create any games.")
+                        Log.i(TAG, "Client with UUID = ${client.uuid} didn't create any games.")
                     }
                 }
                 ClientType.PLAYER -> {
+                    Log.i(TAG, "Player with UUID = $uuid has disconnected")
                     GamesController.getInstance().removeDisconnectedPlayer(client)
                 }
             }

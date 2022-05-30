@@ -8,18 +8,8 @@ import java.text.DateFormat
 import java.util.*
 import kotlin.system.exitProcess
 
-class Log {
-    companion object {
-        private const val TAG = "Log"
-
-        var logger: Log? = null
-            get() {
-                if (field == null) {
-                    field = Log()
-                }
-                return field
-            }
-    }
+object Log {
+    private const val TAG = "Log"
 
     private val logFileName: String
     private val file: FileOutputStream
@@ -73,6 +63,5 @@ class Log {
         i(TAG, "Closing writer...")
         i(TAG, "Have a great day!")
         writer.close()
-        logger = null
     }
 }

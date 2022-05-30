@@ -12,10 +12,12 @@ import net.ciphen.polyhoot.game.session.events.GameSessionEventHandler
 import net.ciphen.polyhoot.game.session.events.GameSessionEventType
 import net.ciphen.polyhoot.game.utils.GamesController
 import net.ciphen.polyhoot.services.entities.Client
+import net.ciphen.polyhoot.utils.Log
 import kotlin.random.Random
 
 class GameSession(val gameId: Int) {
     companion object {
+        private const val TAG = "GameSession"
         private const val GAME_ID_MAX = 999999
         private const val GAME_ID_MIN = 100000
 
@@ -26,7 +28,7 @@ class GameSession(val gameId: Int) {
             while (gameController.getGameById(gameId) != null) {
                 gameId = random.nextInt(GAME_ID_MIN, GAME_ID_MAX)
             }
-            println("Creating new game session with UID $gameId.")
+            Log.i(TAG,"Creating new game session with UID $gameId.")
             val gameSession = GameSession(gameId)
             gameController.addGame(gameSession)
             return gameSession
@@ -42,10 +44,11 @@ class GameSession(val gameId: Int) {
     private var currId = 0
 
     init {
-        println("GameSession: Created new game session with Game ID $gameId!")
+        Log.i("$TAG-$gameId", "Created new game session with Game ID = $gameId!")
     }
 
     fun startGame() {
+        Log.i("$TAG-$gameId", "Starting game!")
         players.forEach { (_, player) ->
             runBlocking {
                 gameSessionEventHandler.notifyPlayer(player, GameSessionEventType.START_GAME)
@@ -54,6 +57,7 @@ class GameSession(val gameId: Int) {
     }
 
     fun nextQuestion(duration: Int, answer: Int, text: String = "") {
+        Log.i("$TAG-$gameId", "Next question!")
         currAnswer = answer
         players.forEach { (_, player) ->
             runBlocking {
@@ -70,6 +74,7 @@ class GameSession(val gameId: Int) {
     }
 
     suspend fun showScoreboard() {
+        Log.i("$TAG-$gameId", "Sending scoreboard to game host.")
         val list = mutableListOf<JsonElement>()
         players.forEach { (_, player) ->
             list.add(
@@ -104,6 +109,7 @@ class GameSession(val gameId: Int) {
                 )
             }
         }
+        Log.i("$TAG-$gameId", "Answer time up!")
     }
 
     fun getReady() {
@@ -112,6 +118,7 @@ class GameSession(val gameId: Int) {
                 gameSessionEventHandler.notifyPlayer(it.value, GameSessionEventType.GET_READY)
             }
         }
+        Log.i("$TAG-$gameId", "Getting ready!")
     }
 
     fun endGame() {
@@ -120,6 +127,7 @@ class GameSession(val gameId: Int) {
                 gameSessionEventHandler.notifyPlayer(it.value, GameSessionEventType.END)
             }
         }
+        Log.i("$TAG-$gameId", "Game has ended.")
         GamesController.getInstance().removeGameSoft(gameId)
     }
 
@@ -127,6 +135,7 @@ class GameSession(val gameId: Int) {
         if (players.filter { it.value == player || it.value.name == player.name }.isNotEmpty() || host == null) {
             return false
         }
+        Log.i("$TAG-$gameId", "Player ${player.name} has connected.")
         players[currId] = player
         currId++
         runBlocking {
@@ -149,7 +158,7 @@ class GameSession(val gameId: Int) {
 
     fun connectHost(client: Client) {
         if (this.host == null) {
-            println("GameSession: Connected host to Game ID $gameId")
+            Log.i("$TAG-$gameId", "Host has connected.")
             host = client
         }
     }
@@ -167,15 +176,16 @@ class GameSession(val gameId: Int) {
                 )
             )
             players.remove(it.key)
+            Log.i("$TAG-$gameId", "Removed player ${it.value.name} from the game.")
         }
     }
 
     suspend fun registerAnswer(player: Player, answer: Int, score: Int) {
         if (answer == currAnswer) {
             player.score += score
-            println("Player ${player.name} got the answer right! Score: ${player.score}")
+            Log.i("$TAG-$gameId","Player ${player.name} got the answer right! Their score: ${player.score}")
         } else {
-            println("Player ${player.name} has the wrong answer! Score: ${player.score}")
+            Log.i("$TAG-$gameId","Player ${player.name} got the wrong answer! Score: ${player.score}")
         }
         host!!.session.outgoing.send(
             Frame.Text(

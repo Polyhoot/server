@@ -13,7 +13,7 @@ import kotlinx.serialization.json.*
 import kotlin.properties.Delegates
 import kotlin.system.exitProcess
 
-class MockHost(private val domain: String, private val port: Int) {
+class MockHost() {
     private val client = HttpClient(Java) {
         install(WebSockets)
     }
@@ -169,6 +169,6 @@ class MockHost(private val domain: String, private val port: Int) {
 
 fun main() {
     runBlocking {
-        MockHost("polyhoot.ciphen.net", 443).start()
+        MockHost().start()
     }
 }

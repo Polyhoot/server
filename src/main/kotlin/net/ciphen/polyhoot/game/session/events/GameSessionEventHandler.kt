@@ -4,6 +4,9 @@ import io.ktor.websocket.*
 import kotlinx.serialization.json.*
 import net.ciphen.polyhoot.game.entities.Player
 import net.ciphen.polyhoot.game.session.GameSession
+import net.ciphen.polyhoot.utils.Log
+
+private const val TAG = "GameSessionEventHandler"
 
 enum class GameSessionEventType {
     CONNECT, START_GAME, QUESTION, END, STATS, INVALID, TIME_UP, NAME_TAKEN, ANSWER, FORCE_STOP, GET_READY, NO_SUCH_GAME;
@@ -21,6 +24,7 @@ enum class GameSessionEventType {
 
 class GameSessionEventHandler(private val gameSession: GameSession) {
     suspend fun onPlayerEvent(player: Player, event: GameSessionEventType, args: String = "") {
+        Log.i(TAG, "Received event $event from player ${player.name}")
         when (event) {
             GameSessionEventType.ANSWER -> {
                 gameSession.registerAnswer(
@@ -29,6 +33,7 @@ class GameSessionEventHandler(private val gameSession: GameSession) {
                     Json.parseToJsonElement(args).jsonObject["score"]!!.jsonPrimitive.int
                 )
             }
+            else -> Log.e(TAG, "Received invalid event.")
         }
     }
 
@@ -37,6 +42,7 @@ class GameSessionEventHandler(private val gameSession: GameSession) {
         event: GameSessionEventType,
         extra: Array<Pair<String, JsonElement>>? = null
     ) {
+        Log.i(TAG, "Sending player ${player.name} event notice $event")
         player.client.session.outgoing.send(
             Frame.Text(
                 if (extra == null) {

@@ -12,17 +12,22 @@ import net.ciphen.polyhoot.game.utils.GamesController
 import net.ciphen.polyhoot.services.entities.Client
 import net.ciphen.polyhoot.services.enums.ClientType
 import net.ciphen.polyhoot.services.utils.ClientManager
+import net.ciphen.polyhoot.utils.Log
 import java.util.*
+
+private const val TAG = "Routes.Session"
 
 class Session {
     init {
         Application.getInstance().ktorApplication.routing {
             webSocket("/game/session") {
+                Log.i(TAG, "Opened WebSocket.")
                 var data: String
                 var player: Player? = null
                 var game: GameSession? = null
                 for (frame in incoming) {
                     if (frame is Frame.Text) {
+                        Log.i(TAG, "Received text data on WebSocket.")
                         val frameData = frame.readText()
                         val json = Json.parseToJsonElement(frameData)
                         val event = GameSessionEventType.fromString(json.jsonObject["event"]!!.jsonPrimitive.content)
@@ -31,7 +36,7 @@ class Session {
                             val name = json.jsonObject["name"]!!.jsonPrimitive.content
                             game = GamesController.getInstance().getGameById(gameId)
                             if (game != null) {
-                                println("Session: Connecting player $name to game ID $gameId")
+                                Log.i(TAG, "Connecting player $name to game ID $gameId")
                                 val client = Client(this, UUID.randomUUID().toString(), ClientType.PLAYER)
                                 ClientManager.getInstance().registerClient(client)
                                 player = Player(client, gameId, name)
@@ -54,7 +59,8 @@ class Session {
                                 close()
                             }
                         } else {
-                            game!!.gameSessionEventHandler.onPlayerEvent(player!!, event, frameData)
+                            Log.i(TAG, "Received player event $event from ${player!!.name}")
+                            game!!.gameSessionEventHandler.onPlayerEvent(player, event, frameData)
                         }
                     }
                 }

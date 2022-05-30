@@ -36,20 +36,24 @@ class Application {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            Log.logger!!.i(TAG, "Starting Polyhoot server!")
+            Log.i(TAG, "Starting Polyhoot server!")
             if (!ApplicationConfig(args).also { getInstance().applicationConfig = it }.debug) {
                 (LoggerFactory.getILoggerFactory() as LoggerContext).getLogger("org.mongodb.driver").level = Level.ERROR
             }
+            Runtime.getRuntime().addShutdownHook(
+                Thread {
+                    getInstance().onDestroy()
+                }
+            )
             getInstance().onConfigLoaded()
         }
     }
 
     lateinit var applicationConfig: ApplicationConfig
     lateinit var ktorApplication: io.ktor.server.application.Application
-    private val logger = Log.logger!!
 
     fun onConfigLoaded() {
-        logger.i(TAG, "Config loaded. Launching embedded server on localhost on port ${applicationConfig.port}.")
+        Log.i(TAG, "Config loaded. Launching embedded server on localhost on port ${applicationConfig.port}.")
         embeddedServer(Netty, port = applicationConfig.port, host = "0.0.0.0") {
             ktorApplication = this
             WebSocket(this)
@@ -85,6 +89,10 @@ class Application {
             packRouting()
             fileRouting()
         }.start(wait = true)
+    }
+
+    fun onDestroy() {
+        Log.onDestroy()
     }
 }
 

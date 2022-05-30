@@ -8,9 +8,11 @@ import net.ciphen.polyhoot.game.session.GameSession
 import net.ciphen.polyhoot.services.entities.Client
 import net.ciphen.polyhoot.utils.Log
 
+private const val TAG = "GameHostEventHandler"
+
 class GameHostEventHandler(val client: Client, val game: GameSession) {
     suspend fun onHostAction(action: GameHostActions, data: String) {
-        Log.logger!!.i("GameHostEventHandler", "Received action: $action with data $data")
+        Log.i(TAG, "Received action $action with data $data")
         when (action) {
             GameHostActions.CONNECT -> {
                 game.connectHost(client)
@@ -37,6 +39,7 @@ class GameHostEventHandler(val client: Client, val game: GameSession) {
             GameHostActions.END -> {
                 game.endGame()
             }
+            else -> Log.e(TAG, "Invalid action.")
         }
     }
 }
