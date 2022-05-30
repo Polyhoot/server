@@ -13,8 +13,8 @@ import net.ciphen.polyhoot.game.session.GameSession
 import net.ciphen.polyhoot.game.session.events.GameSessionEventType
 import net.ciphen.polyhoot.game.utils.GamesController
 import net.ciphen.polyhoot.utils.Log
-import org.junit.Test
 import java.net.BindException
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
