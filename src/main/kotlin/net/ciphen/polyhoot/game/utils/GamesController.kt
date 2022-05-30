@@ -26,6 +26,8 @@ class GamesController {
 
     fun getGameById(gameId: Int): GameSession? = games[gameId]
 
+    fun removeGameSoft(gameId: Int) = games.remove(gameId)
+
     private fun getGameByHost(client: Client): GameSession? {
         games.forEach {
             if (it.value.host!!.uuid == client.uuid) {

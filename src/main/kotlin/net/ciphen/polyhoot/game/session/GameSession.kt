@@ -120,6 +120,7 @@ class GameSession(val gameId: Int) {
                 gameSessionEventHandler.notifyPlayer(it.value, GameSessionEventType.END)
             }
         }
+        GamesController.getInstance().removeGameSoft(gameId)
     }
 
     suspend fun connectPlayer(player: Player): Boolean {
