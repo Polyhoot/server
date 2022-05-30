@@ -43,7 +43,10 @@ class Session {
                                     Frame.Text(
                                         JsonObject(
                                             mapOf(
-                                                Pair("event", JsonPrimitive(GameSessionEventType.NO_SUCH_GAME.toString()))
+                                                Pair(
+                                                    "event",
+                                                    JsonPrimitive(GameSessionEventType.NO_SUCH_GAME.toString())
+                                                )
                                             )
                                         ).toString()
                                     )
