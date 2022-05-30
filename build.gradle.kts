@@ -56,4 +56,6 @@ dependencies {
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("io.ktor:ktor-server-cors:$ktor_version")
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
+    testImplementation("io.ktor:ktor-client-websockets:$ktor_version")
+    testImplementation("io.ktor:ktor-client-java:$ktor_version")
 }

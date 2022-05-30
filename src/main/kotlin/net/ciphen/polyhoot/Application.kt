@@ -51,6 +51,7 @@ class Application {
 
     lateinit var applicationConfig: ApplicationConfig
     lateinit var ktorApplication: io.ktor.server.application.Application
+    var serverUp = false
 
     fun onConfigLoaded() {
         Log.i(TAG, "Config loaded. Launching embedded server on localhost on port ${applicationConfig.port}.")
@@ -88,6 +89,7 @@ class Application {
             userRouting()
             packRouting()
             fileRouting()
+            serverUp = true
         }.start(wait = true)
     }
 

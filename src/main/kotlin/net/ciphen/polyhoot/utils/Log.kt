@@ -60,8 +60,6 @@ object Log {
     private fun getTimeDate(): String = DateFormat.getDateTimeInstance().format(Date())
 
     fun onDestroy() {
-        i(TAG, "Closing writer...")
-        i(TAG, "Have a great day!")
         writer.close()
     }
 }
