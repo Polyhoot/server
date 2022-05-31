@@ -1,9 +1,6 @@
 package net.ciphen.polyhoot.game.host
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.int
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import net.ciphen.polyhoot.game.session.GameSession
 import net.ciphen.polyhoot.services.entities.Client
 import net.ciphen.polyhoot.utils.Log
@@ -23,9 +20,9 @@ class GameHostEventHandler(val client: Client, val game: GameSession) {
             GameHostActions.SEND_QUESTION -> {
                 val json = Json.parseToJsonElement(data)
                 val duration = json.jsonObject["duration"]!!.jsonPrimitive.int
-                val answer = json.jsonObject["answer"]!!.jsonPrimitive.int
+                val answers = json.jsonObject["answers"]!!.jsonArray.map { it.jsonPrimitive.int }
                 val text = json.jsonObject["text"]?.jsonPrimitive?.content ?: ""
-                game.nextQuestion(duration, answer, text)
+                game.nextQuestion(duration, answers, text)
             }
             GameHostActions.TIME_UP -> {
                 game.questionTimeUp()
