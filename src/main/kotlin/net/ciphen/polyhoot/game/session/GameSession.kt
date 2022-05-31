@@ -40,7 +40,7 @@ class GameSession(val gameId: Int) {
 
     // Initialize without host
     var host: Client? = null
-    private var currAnswer = 0
+    private var currAnswers = listOf(0)
     private var currId = 0
 
     init {
@@ -56,9 +56,9 @@ class GameSession(val gameId: Int) {
         }
     }
 
-    fun nextQuestion(duration: Int, answer: Int, text: String = "") {
+    fun nextQuestion(duration: Int, answers: List<Int>, text: String = "") {
         Log.i("$TAG-$gameId", "Next question!")
-        currAnswer = answer
+        currAnswers = answers
         players.forEach { (_, player) ->
             runBlocking {
                 gameSessionEventHandler.notifyPlayer(
@@ -181,7 +181,7 @@ class GameSession(val gameId: Int) {
     }
 
     suspend fun registerAnswer(player: Player, answer: Int, score: Int) {
-        if (answer == currAnswer) {
+        if (answer in currAnswers) {
             player.score += score
             Log.i("$TAG-$gameId","Player ${player.name} got the answer right! Their score: ${player.score}")
         } else {
