@@ -29,6 +29,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     implementation("io.ktor:ktor-client-java-jvm:2.0.2")
     implementation("io.ktor:ktor-client-websockets-jvm:2.0.2")

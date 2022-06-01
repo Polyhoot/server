@@ -20,6 +20,9 @@ import io.ktor.client.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.websocket.*
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
+import kotlinx.cli.default
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -28,7 +31,18 @@ import kotlinx.serialization.json.*
 import kotlin.properties.Delegates
 import kotlin.system.exitProcess
 
-class MockHost() {
+class MockHost(args: Array<String>) {
+    private val parser = ArgParser("mockhost")
+    private val hostName by parser.argument(ArgType.String, fullName = "hostName", description = "WebSocket URL to server backend")
+    private val port by parser.option(ArgType.Int, shortName = "p", description = "Port to use for WebSocket host (default: none)").default(0)
+    private val secure by parser.option(ArgType.Boolean, shortName = "s", description = "Enable WebSocket Secure").default(false)
+    private val url: String
+
+    init {
+        parser.parse(args)
+        url = "ws${if (secure) "s" else ""}://$hostName${if (port != 0) ":$port" else ""}"
+    }
+
     private val client = HttpClient(Java) {
         install(WebSockets)
     }
@@ -37,12 +51,12 @@ class MockHost() {
 
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun start() {
-        client.webSocket("wss://polyhoot.ciphen.net/game/create") {
+        client.webSocket("$url/game/create") {
             gameId =
                 Json.parseToJsonElement((incoming.receive() as Frame.Text).readText()).jsonObject["gameId"]!!.jsonPrimitive.int
             println("Received game ID: $gameId")
         }
-        client.webSocket("wss://polyhoot.ciphen.net/game/host") {
+        client.webSocket("$url/game/host") {
             GlobalScope.launch {
                 for (frame in incoming) {
                     val text = (frame as Frame.Text).readText()
@@ -182,8 +196,8 @@ class MockHost() {
     }
 }
 
-fun main() {
+fun main(args: Array<String>) {
     runBlocking {
-        MockHost().start()
+        MockHost(args).start()
     }
 }
