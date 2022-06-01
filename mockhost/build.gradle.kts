@@ -1,5 +1,3 @@
-val ktor_version: String by project
-
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
@@ -15,9 +13,9 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-client-websockets:$ktor_version")
-    implementation("io.ktor:ktor-client-java:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+    implementation("io.ktor:ktor-client-java-jvm:2.0.2")
+    implementation("io.ktor:ktor-client-websockets-jvm:2.0.2")
 }
 
 application {

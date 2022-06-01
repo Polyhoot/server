@@ -1,5 +1,6 @@
 package net.ciphen.polyhoot.game.session
 
+import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonArray
@@ -28,7 +29,7 @@ class GameSession(val gameId: Int) {
             while (gameController.getGameById(gameId) != null) {
                 gameId = random.nextInt(GAME_ID_MIN, GAME_ID_MAX)
             }
-            Log.i(TAG,"Creating new game session with UID $gameId.")
+            Log.i(TAG, "Creating new game session with UID $gameId.")
             val gameSession = GameSession(gameId)
             gameController.addGame(gameSession)
             return gameSession
@@ -183,9 +184,9 @@ class GameSession(val gameId: Int) {
     suspend fun registerAnswer(player: Player, answer: Int, score: Int) {
         if (answer in currAnswers) {
             player.score += score
-            Log.i("$TAG-$gameId","Player ${player.name} got the answer right! Their score: ${player.score}")
+            Log.i("$TAG-$gameId", "Player ${player.name} got the answer right! Their score: ${player.score}")
         } else {
-            Log.i("$TAG-$gameId","Player ${player.name} got the wrong answer! Score: ${player.score}")
+            Log.i("$TAG-$gameId", "Player ${player.name} got the wrong answer! Score: ${player.score}")
         }
         host!!.session.outgoing.send(
             Frame.Text(

@@ -26,7 +26,8 @@ class GameProcessTest {
         Thread {
             try {
                 MongoServer(MemoryBackend()).bind("localhost", 45678)
-            } catch (_: BindException) {}
+            } catch (_: BindException) {
+            }
             Application.main(arrayOf())
         }.start()
     }
@@ -94,7 +95,8 @@ class GameProcessTest {
         runBlocking {
             getClient().webSocket("ws://0.0.0.0:8080/game/host") {
                 GlobalScope.launch {
-                    for (frame in incoming) {}
+                    for (frame in incoming) {
+                    }
                 }
                 outgoing.send(
                     Frame.Text(
@@ -128,7 +130,8 @@ class GameProcessTest {
         runBlocking {
             getClient().webSocket("ws://0.0.0.0:8080/game/host") {
                 GlobalScope.launch {
-                    for (frame in incoming) {}
+                    for (frame in incoming) {
+                    }
                 }
                 outgoing.send(
                     Frame.Text(

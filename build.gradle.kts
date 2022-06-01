@@ -1,4 +1,3 @@
-val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 
@@ -34,34 +33,34 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-status-pages-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-locations-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-websockets-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
-    implementation("io.ktor:ktor-serialization-gson-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-core-jvm:2.0.2")
+    implementation("io.ktor:ktor-server-auth-jvm:2.0.2")
+    implementation("io.ktor:ktor-server-host-common-jvm:2.0.2")
+    implementation("io.ktor:ktor-server-status-pages-jvm:2.0.2")
+    implementation("io.ktor:ktor-server-locations-jvm:2.0.2")
+    implementation("io.ktor:ktor-server-websockets-jvm:2.0.2")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:2.0.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:2.0.2")
+    implementation("io.ktor:ktor-serialization-gson-jvm:2.0.2")
+    implementation("io.ktor:ktor-server-netty-jvm:2.0.2")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("io.ktor:ktor-server-auth:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-server-auth:2.0.2")
+    implementation("io.ktor:ktor-server-auth-jwt:2.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.litote.kmongo:kmongo-coroutine:4.5.1")
     implementation("org.mindrot:jbcrypt:0.4")
-    implementation("io.ktor:ktor-server-cors:$ktor_version")
+    implementation("io.ktor:ktor-server-cors:2.0.2")
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
-    testImplementation("io.ktor:ktor-client-websockets:$ktor_version")
-    testImplementation("io.ktor:ktor-client-java:$ktor_version")
     testImplementation("de.bwaldvogel:mongo-java-server:1.40.0")
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    testImplementation("io.ktor:ktor-server-tests-jvm:2.0.2")
+    testImplementation("io.ktor:ktor-client-content-negotiation:2.0.2")
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version")
+    testImplementation("io.ktor:ktor-client-java-jvm:2.0.2")
+    testImplementation("io.ktor:ktor-client-websockets-jvm:2.0.2")
 }
 
 tasks.test {
