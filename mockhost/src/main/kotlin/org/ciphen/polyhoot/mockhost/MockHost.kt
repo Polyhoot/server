@@ -100,7 +100,7 @@ class MockHost() {
                         mapOf(
                             Pair("action", JsonPrimitive("send_question")),
                             Pair("duration", JsonPrimitive(10)),
-                            Pair("answer", JsonPrimitive(0))
+                            Pair("answers", JsonArray(listOf(JsonPrimitive(0))))
                         ),
                     ).toString()
                 )
