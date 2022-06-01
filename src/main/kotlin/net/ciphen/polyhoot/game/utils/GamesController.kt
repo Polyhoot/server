@@ -52,8 +52,10 @@ class GamesController {
 
     private fun getGameByHost(client: Client): GameSession? {
         games.forEach {
-            if (it.value.host!!.uuid == client.uuid) {
-                return it.value
+            if (it.value.host != null) {
+                if (it.value.host!!.uuid == client.uuid) {
+                    return it.value
+                }
             }
         }
         return null
